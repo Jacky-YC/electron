@@ -23,6 +23,7 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #include "base/files/file_path.h"
+#include "shell/browser/ui/win/taskbar_host.h"
 #endif
 
 #if defined(OS_MAC)
@@ -107,10 +108,21 @@ class Browser : public WindowListObserver {
 #endif
 
   // Set/Get the badge count.
-  bool SetBadgeCount(int count);
+#if defined(OS_WIN)
+  bool SetBadgeCount(base::Optional<int> count,
+                     base::Optional<bool> shouldSetBadge);
+  int GetBadgeCount(base::Optional<bool> shouldGetBadge);
+#else
+  bool SetBadgeCount(base::Optional<int> count);
   int GetBadgeCount();
+#endif
 
 #if defined(OS_WIN)
+  // Used by WindowsEnumerationBadgeHandler to get the window to set badge for
+  DWORD badge_process_id;
+
+  void UpdateBadgeContents(HWND hwnd);
+
   struct LaunchItem {
     base::string16 name;
     base::string16 path;
@@ -362,6 +374,15 @@ class Browser : public WindowListObserver {
   base::Value about_panel_options_;
 #elif defined(OS_MAC)
   base::DictionaryValue about_panel_options_;
+#endif
+
+#if defined(OS_WIN)
+  void UpdateBadgeContents(HWND hwnd,
+                           const base::Optional<std::string> badge_content,
+                           const std::string badge_alt_string);
+
+  // In charge of running taskbar related APIs.
+  TaskbarHost taskbar_host_;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(Browser);

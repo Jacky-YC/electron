@@ -156,9 +156,11 @@ void Browser::SetName(const std::string& name) {
   OverrideApplicationName(name);
 }
 
+#if !defined(OS_WIN)
 int Browser::GetBadgeCount() {
   return badge_count_;
 }
+#endif
 
 bool Browser::OpenFile(const std::string& file_path) {
   bool prevent_default = false;

@@ -568,11 +568,17 @@ describe('app module', () => {
       });
 
       it('with functions', () => {
-        it('sets a badge count', function () {
+        it('sets a numerical badge count', function () {
           if (platformIsNotSupported) return this.skip();
 
           app.setBadgeCount(expectedBadgeCount);
           expect(app.getBadgeCount()).to.equal(expectedBadgeCount);
+        });
+        it('sets an non numeric (dot) badge count', function () {
+          if (platformIsNotSupported) return this.skip();
+          app.setBadgeCount();
+          // Badge count should be zero when non numeric (dot) is requested
+          expect(app.getBadgeCount()).to.equal(0);
         });
       });
     });
